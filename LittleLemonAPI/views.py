@@ -77,18 +77,19 @@ class CartListView(generics.ListCreateAPIView):
 
 
 class OrderListView(generics.ListCreateAPIView):
+    queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     filterset_fields = ['status', 'delivery_crew']
     ordering_fields = ['date', 'total']
     search_fields = ['date', '']
+
     def get_queryset(self):
         user = self.request.user
         return Order.objects.filter(user=user)
 
     def perform_create(self, serializer):
-        user = self.request.user
-        serializer.save(user=user)
+        serializer.save(user=self.request.user)
 
 class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Order.objects.all()

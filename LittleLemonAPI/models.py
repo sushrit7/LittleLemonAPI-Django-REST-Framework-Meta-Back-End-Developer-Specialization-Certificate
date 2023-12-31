@@ -39,7 +39,7 @@ class Order(models.Model):
     date = models.DateTimeField(db_index=True)
 
     def __str__(self) -> str:
-        return self.title
+        return str(self.user)
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
@@ -52,5 +52,5 @@ class OrderItem(models.Model):
         unique_together = ('order', 'menuitem')
 
     def __str__(self) -> str:
-        return self.title
+        return str(self.menuitem)
 
