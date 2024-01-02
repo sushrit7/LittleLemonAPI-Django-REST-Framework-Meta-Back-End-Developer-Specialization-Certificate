@@ -47,7 +47,7 @@ class ManagerGroupUsersView(generics.ListCreateAPIView):
         group, _ = Group.objects.get_or_create(name='Manager')
         user.groups.add(group)
 
-        return Response(status=status.HTTP_201_CREATED)
+        return Response({"message": "user added to the manager group"},status=status.HTTP_201_CREATED)
         
 
 class ManagerGroupUserDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -136,6 +136,10 @@ class OrderListView(generics.ListCreateAPIView):
 
         if user.groups.filter(name='Manager').exists():
             return Order.objects.all()
+        
+        if user.groups.filter(name='Delivery Crew').exists():
+            orders = Order.objects.filter(delivery_crew=user)
+            return orders
 
         orders = Order.objects.filter(user=user)
         return orders
@@ -151,7 +155,7 @@ class OrderListView(generics.ListCreateAPIView):
 
         # Create an order
         total = sum(item.price for item in cart_items)
-        order = Order.objects.create(user=user, delivery_crew=None, status=False, date=datetime.now(), total=total)
+        order = Order.objects.create(user=user, delivery_crew=None, status=False, date=self.request.data['date'], total=total)
 
         # Create order items from cart items
         for cart_item in cart_items:
@@ -203,6 +207,9 @@ class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
             return Response({'detail': 'Invalid status value. Use 0 or 1.'}, status=status.HTTP_400_BAD_REQUEST)
 
         # Update the order status
+        if request.user.groups.filter(name='Manager').exists():
+            order.delivery_crew = request.data['delivery_crew']
+
         order.status = new_status
         order.save()
 

@@ -8,6 +8,9 @@ class IsManager(permissions.BasePermission):
         if request.method == 'GET':
             return True
         
+        if request.user.is_superuser:
+            return True
+        
         return request.user.groups.filter(name='Manager').exists()
 
 
@@ -18,12 +21,17 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
 
 class OnlyManager(permissions.BasePermission):
     def has_permission(self, request, view):
+        if request.user.is_superuser:
+            return True
         return request.user.groups.filter(name='Manager').exists()
     
 class OrdersPermission(permissions.BasePermission):
     def has_permission(self, request, view):
         # Allow unrestricted access for GET requests
         if request.method == 'GET':
+            return True
+        
+        if request.user.is_superuser:
             return True
         
         if request.method == 'DELETE' and request.user.groups.filter(name='Manager').exists():
