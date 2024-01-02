@@ -22,27 +22,40 @@ class Cart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     menuitem = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
     quantity = models.SmallIntegerField()
-    unit_price = models.DecimalField(max_digits=6, decimal_places=2)
-    price = models.DecimalField(max_digits=6, decimal_places=2)
+    unit_price = models.DecimalField(max_digits=6, decimal_places=2, blank=True)
+    price = models.DecimalField(max_digits=6, decimal_places=2, blank=True)
 
     class Meta:
         unique_together = ( 'menuitem', 'user')
 
     def __str__(self) -> str:
-        return self.title
+        return self.menuitem.title
+    
+    def save(self, *args, **kwargs):
+        # Automatically populate unit price and price based on MenuItem
+        menu_item = self.menuitem
+        self.unit_price = menu_item.price
+        self.price = menu_item.price * self.quantity
+
+        super().save(*args, **kwargs)
 
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     delivery_crew = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='delivery_crew', null=True)
     status = models.BooleanField(db_index=True, default=0)
-    total = models.DecimalField(max_digits=6, decimal_places=2)
-    date = models.DateTimeField(db_index=True)
+    total = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
+    date = models.DateTimeField(db_index=True, blank=True, null=True)
 
     def __str__(self) -> str:
         return str(self.user)
+    
+    def calculate_total(self):
+        order_items = self.orderitem_set.all()
+        total = sum(item.price for item in order_items)
+        return total
 
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, null=True)
     menuitem = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
     quantity = models.SmallIntegerField()
     unit_price = models.DecimalField(max_digits=6, decimal_places=2)

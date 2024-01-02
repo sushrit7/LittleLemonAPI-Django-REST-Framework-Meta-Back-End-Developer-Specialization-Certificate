@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.shortcuts import render
 from django.contrib.auth.models import User, Group
 from .serializers import UserSerializer
@@ -8,7 +9,7 @@ from rest_framework import status
 
 from .models import MenuItem, Cart, Order, OrderItem
 from .serializers import MenuItemSerializer, CartSerializer, OrderSerializer, OrderItemSerializer
-from .permissions import IsManager, IsOwnerOrReadOnly
+from .permissions import IsManager, IsOwnerOrReadOnly, OnlyManager, OrdersPermission
 
 # Menu-Item
 class MenuItemListView(generics.ListCreateAPIView):
@@ -25,26 +26,34 @@ class SingleMenuItemView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated, IsManager]
 
 # User Management
-
+    
 class ManagerGroupUsersView(generics.ListCreateAPIView):
     queryset = User.objects.filter(groups__name='Manager')
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated, OnlyManager]
 
     def post(self, request, *args, **kwargs):
-        user_id = request.data.get('user_id')
+        username = request.data.get('username')
+
+        if not username:
+            return Response({'detail': 'Username is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Try to get the user by username
         try:
-            user = User.objects.get(id=user_id)
-            group, created = Group.objects.get_or_create(name='Manager')
-            user.groups.add(group)
-            return Response(status=status.HTTP_201_CREATED)
+            user = User.objects.get(username=username)
         except User.DoesNotExist:
             return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
-class ManagerGroupUserDetailView(generics.DestroyAPIView):
+        group, _ = Group.objects.get_or_create(name='Manager')
+        user.groups.add(group)
+
+        return Response(status=status.HTTP_201_CREATED)
+        
+
+class ManagerGroupUserDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.filter(groups__name='Manager')
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated, OnlyManager]
 
     def delete(self, request, *args, **kwargs):
         user_id = kwargs.get('pk')
@@ -56,6 +65,43 @@ class ManagerGroupUserDetailView(generics.DestroyAPIView):
         except User.DoesNotExist:
             return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
+class DeliveryGroupUsersView(generics.ListCreateAPIView):
+    queryset = User.objects.filter(groups__name='Delivery Crew')
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated, OnlyManager]
+
+    def post(self, request, *args, **kwargs):
+        username = request.data.get('username')
+
+        if not username:
+            return Response({'detail': 'Username is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Try to get the user by username
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        group, _ = Group.objects.get_or_create(name='Delivery Crew')
+        user.groups.add(group)
+
+        return Response(status=status.HTTP_201_CREATED)
+
+class DeliveryGroupUserDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = User.objects.filter(groups__name='Delivery Crew')
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated, OnlyManager]
+
+    def delete(self, request, *args, **kwargs):
+        user_id = kwargs.get('pk')
+        try:
+            user = User.objects.get(id=user_id)
+            group = Group.objects.get(name='Delivery Crew')
+            user.groups.remove(group)
+            return Response(status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        
 class CartListView(generics.ListCreateAPIView):
     queryset = Cart.objects.all()
     serializer_class = CartSerializer
@@ -75,41 +121,95 @@ class CartListView(generics.ListCreateAPIView):
         return Response(status=204)
     
 
-
 class OrderListView(generics.ListCreateAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, OrdersPermission]
     filterset_fields = ['status', 'delivery_crew']
     ordering_fields = ['date', 'total']
     search_fields = ['date', '']
 
+
+
     def get_queryset(self):
         user = self.request.user
-        return Order.objects.filter(user=user)
+
+        if user.groups.filter(name='Manager').exists():
+            return Order.objects.all()
+
+        orders = Order.objects.filter(user=user)
+        return orders
+
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+    # Get current user and their cart items
+        user = self.request.user
+        cart_items = Cart.objects.filter(user=user)
+
+        if not cart_items.exists():
+            return Response({'detail': 'Cart is empty'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Create an order
+        total = sum(item.price for item in cart_items)
+        order = Order.objects.create(user=user, delivery_crew=None, status=False, date=datetime.now(), total=total)
+
+        # Create order items from cart items
+        for cart_item in cart_items:
+            order_item_data = {
+                'order': order.pk,
+                'menuitem': cart_item.menuitem.id,
+                'quantity': cart_item.quantity,
+                'unit_price': cart_item.unit_price,
+                'price': cart_item.price,
+            }
+            order_item_serializer = OrderItemSerializer(data=order_item_data)
+            order_item_serializer.is_valid(raise_exception=True)
+            order_item_serializer.save()
+
+        # Delete cart items after creating order items
+        cart_items.delete()
+
+        # Update the total in the order
+        order.total = order.calculate_total()
+        order.save()
+
+        return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
+
+        
+
 
 class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated, OrdersPermission]
 
     def put(self, request, *args, **kwargs):
         order = self.get_object()
-        if order.user != request.user:
+        if not request.user.groups.filter(name='Manager').exists():
             return Response({'detail': 'You do not have permission to update this order.'}, status=403)
         return super().put(request, *args, **kwargs)
+    
 
-    def patch(self, request, *args, **kwargs):
+    def partial_update(self, request, *args, **kwargs):
         order = self.get_object()
-        if order.user != request.user:
-            return Response({'detail': 'You do not have permission to update this order.'}, status=403)
-        return super().patch(request, *args, **kwargs)
 
+        # Check if the request body contains 'status' key
+        if 'status' not in request.data:
+            return Response({'detail': 'Invalid request. Missing "status" key.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Validate the value of 'status'
+        new_status = request.data['status']
+        if new_status not in [0, 1]:
+            return Response({'detail': 'Invalid status value. Use 0 or 1.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Update the order status
+        order.status = new_status
+        order.save()
+
+        return Response(OrderSerializer(order).data, status=status.HTTP_200_OK)
+    
     def delete(self, request, *args, **kwargs):
         order = self.get_object()
-        if order.user != request.user:
+        if order.user != request.user and not request.user.groups.filter(name='Manager').exists():
             return Response({'detail': 'You do not have permission to delete this order.'}, status=403)
         return super().delete(request, *args, **kwargs)
