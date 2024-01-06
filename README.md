@@ -1,4 +1,4 @@
-# Little Lemon API - Django REST Framework Back-End Developer Specialization
+# Little Lemon API - Django REST-Framework, Back-End Developer Specialization
 
 # Index
 1. [Introduction](#introduction)
