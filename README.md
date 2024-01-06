@@ -1,10 +1,9 @@
 # Little Lemon API - Django REST Framework Back-End Developer Specialization
 
-
+# Index
 1. [Introduction](#introduction)
 2. [Project Scope](#project-scope)
 3. [Project Structure](#project-structure)
-4. [Functionality and Views](#functionality-and-views)
 5. [User Groups](#user-groups)
 6. [Error Handling and Status Codes](#error-handling-and-status-codes)
 7. [API Endpoints](#api-endpoints)
@@ -13,7 +12,7 @@
     3. [User Group Management](#user-group-management)
     4. [Cart Management](#cart-management)
     5. [Order Management](#order-management)
-    6. [Additional Steps](#additional-steps)
+    6. [Additional](#additional)
     7. [Throttling](#throttling)
 8. [Getting Started](#getting-started)
     1. [Prerequisites](#prerequisites)
@@ -25,7 +24,7 @@
 
 ## Introduction
 
-This repository contains the back-end codebase for the Little Lemon restaurant API, developed as part of the Django REST Framework Back-End Developer Specialization Certificate. The API is designed to support various functionalities for managing menu items, orders, user roles, and more.
+This repository contains the back-end codebase for the Little Lemon restaurant API, developed as part of the Django REST Framework Back-End Developer Specialization Certificate. The API is designed to support various functionalities for managing menu items, cart, orders, user roles, and more.
 
 ## Project Scope
 
@@ -33,19 +32,15 @@ The primary goal of this project is to create a robust API that enables client a
 
 ## Project Structure
 
-The project is organized into a single Django app named `LittleLemonAPI`. Dependencies are managed using `pipenv`. Please review the [video tutorial](#) on creating a Django project using pipenv for setup instructions.
-
-## Functionality and Views
-
-You have the flexibility to use function-based or class-based views throughout the project. Follow the proper API naming conventions, as outlined in the [video tutorial](#) on naming conventions.
+The project is organized into a single Django app named `LittleLemonAPI`. Dependencies are managed using `pipenv`. 
 
 ## User Groups
 
-Two user groups, namely "Manager" and "Delivery Crew," have been created. Utilize the Django admin panel to assign users to these groups. Users not assigned to any group are considered customers. Refer to the [video tutorial](#) on user roles for more details.
+Two user groups, namely "Manager" and "Delivery Crew," have been created. Utilize the Django admin panel to assign users to these groups. Users not assigned to any group are considered customers. 
 
 ## Error Handling and Status Codes
 
-Ensure proper error handling by displaying error messages with appropriate HTTP status codes. Refer to the table below for the list of status codes and their corresponding reasons:
+Refer to the table below for the list of status codes and their corresponding reasons:
 
 | HTTP Status Code | Reason                     |
 | -----------------| -------------------------- |
@@ -172,13 +167,10 @@ Ensure proper error handling by displaying error messages with appropriate HTTP 
 - **PATCH /api/orders/{orderId}**
   - Purpose: Updates the order status.
 
-### Additional Steps
+### Additional
 
-Implement proper filtering, pagination, and sorting for `/api/menu-items` and `/api/orders` endpoints. Refer to the [videos](#) on filtering, searching, and pagination, as well as the [reading](#) on more filtering and pagination.
+Filtering, pagination, and sorting are added at `/api/menu-items` and `/api/orders` endpoints.
 
-### Throttling
-
-Apply throttling for both authenticated and anonymous/unauthenticated users. Review the [video tutorial](#) and the [reading](#) on API throttling for guidance.
 
 ## Getting Started
 
