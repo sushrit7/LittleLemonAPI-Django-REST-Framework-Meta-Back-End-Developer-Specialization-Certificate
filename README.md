@@ -157,6 +157,42 @@ Implement proper filtering, pagination, and sorting for `/api/menu-items` and `/
 
 Apply throttling for both authenticated and anonymous/unauthenticated users. Review the [video tutorial](#) and the [reading](#) on API throttling for guidance.
 
+## Getting Started
+
+To get started with this project, follow the steps below:
+
+### Prerequisites
+
+- [Python](https://www.python.org/downloads/)
+- [pipenv](https://pipenv.pypa.io/en/latest/installation.html)
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/your-username/LittleLemonAPI.git
+```
+
+cd LittleLemonAPI
+### Set Up Virtual Environment and Install Dependencies
+bash
+```
+pipenv install
+pipenv shell
+```
+### Run Migrations
+bash
+```
+python manage.py makemigrations
+python manage.py migrate
+
+```
+### Run the Development Server
+bash
+```
+python manage.py runserver
+```
+Now, you can access the API at http://127.0.0.1:8000/.
+
 ## Conclusion
 
 With a comprehensive understanding of the project scope and essential API endpoints, you are now well-equipped to embark on the development journey. Good luck, and happy coding!
