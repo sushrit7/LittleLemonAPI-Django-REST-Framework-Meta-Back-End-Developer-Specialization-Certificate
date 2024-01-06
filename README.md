@@ -5,7 +5,6 @@
 2. [Project Scope](#project-scope)
 3. [Project Structure](#project-structure)
 5. [User Groups](#user-groups)
-6. [Error Handling and Status Codes](#error-handling-and-status-codes)
 7. [API Endpoints](#api-endpoints)
     1. [User Registration and Token Generation](#user-registration-and-token-generation)
     2. [Menu Items](#menu-items)
@@ -14,13 +13,14 @@
     5. [Order Management](#order-management)
     6. [Additional](#additional)
     7. [Throttling](#throttling)
-8. [Getting Started](#getting-started)
+8. [Error Handling and Status Codes](#error-handling-and-status-codes)
+9. [Getting Started](#getting-started)
     1. [Prerequisites](#prerequisites)
     2. [Clone the Repository](#clone-the-repository)
     3. [Set Up Virtual Environment and Install Dependencies](#set-up-virtual-environment-and-install-dependencies)
     4. [Run Migrations](#run-migrations)
     5. [Run the Development Server](#run-the-development-server)
-9. [Conclusion](#conclusion)
+10. [Conclusion](#conclusion)
 
 ## Introduction
 
@@ -37,19 +37,6 @@ The project is organized into a single Django app named `LittleLemonAPI`. Depend
 ## User Groups
 
 Two user groups, namely "Manager" and "Delivery Crew," have been created. Utilize the Django admin panel to assign users to these groups. Users not assigned to any group are considered customers. 
-
-## Error Handling and Status Codes
-
-Refer to the table below for the list of status codes and their corresponding reasons:
-
-| HTTP Status Code | Reason                     |
-| -----------------| -------------------------- |
-| 200              | Ok                         |
-| 201              | Created                    |
-| 403              | Unauthorized               |
-| 401              | Forbidden                  |
-| 400              | Bad Request                |
-| 404              | Not Found                  |
 
 ## API Endpoints
 
@@ -170,6 +157,19 @@ Refer to the table below for the list of status codes and their corresponding re
 ### Additional
 
 Filtering, pagination, and sorting are added at `/api/menu-items` and `/api/orders` endpoints.
+
+## Error Handling and Status Codes
+
+Refer to the table below for the list of status codes and their corresponding reasons:
+
+| HTTP Status Code | Reason                     |
+| -----------------| -------------------------- |
+| 200              | Ok                         |
+| 201              | Created                    |
+| 403              | Unauthorized               |
+| 401              | Forbidden                  |
+| 400              | Bad Request                |
+| 404              | Not Found                  |
 
 
 ## Getting Started
