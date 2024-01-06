@@ -1,5 +1,28 @@
 # Little Lemon API - Django REST Framework Back-End Developer Specialization
 
+
+1. [Introduction](#introduction)
+2. [Project Scope](#project-scope)
+3. [Project Structure](#project-structure)
+4. [Functionality and Views](#functionality-and-views)
+5. [User Groups](#user-groups)
+6. [Error Handling and Status Codes](#error-handling-and-status-codes)
+7. [API Endpoints](#api-endpoints)
+    1. [User Registration and Token Generation](#user-registration-and-token-generation)
+    2. [Menu Items](#menu-items)
+    3. [User Group Management](#user-group-management)
+    4. [Cart Management](#cart-management)
+    5. [Order Management](#order-management)
+    6. [Additional Steps](#additional-steps)
+    7. [Throttling](#throttling)
+8. [Getting Started](#getting-started)
+    1. [Prerequisites](#prerequisites)
+    2. [Clone the Repository](#clone-the-repository)
+    3. [Set Up Virtual Environment and Install Dependencies](#set-up-virtual-environment-and-install-dependencies)
+    4. [Run Migrations](#run-migrations)
+    5. [Run the Development Server](#run-the-development-server)
+9. [Conclusion](#conclusion)
+
 ## Introduction
 
 This repository contains the back-end codebase for the Little Lemon restaurant API, developed as part of the Django REST Framework Back-End Developer Specialization Certificate. The API is designed to support various functionalities for managing menu items, orders, user roles, and more.
