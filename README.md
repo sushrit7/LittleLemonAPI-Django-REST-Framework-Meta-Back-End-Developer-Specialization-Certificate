@@ -40,7 +40,7 @@ Two user groups, namely "Manager" and "Delivery Crew," have been created. Utiliz
 
 ## API Endpoints
 
-### User Registration and Token Generation
+### 1. User Registration and Token Generation
 
 - **POST /api/users**
   - Role: No role required
@@ -54,9 +54,9 @@ Two user groups, namely "Manager" and "Delivery Crew," have been created. Utiliz
   - Role: Anyone with a valid username and password
   - Purpose: Generates access tokens for use in other API calls.
 
-### Menu Items
+### 2. Menu Items
 
-#### Accessible by Customers and Delivery Crew
+#### i. Accessible by Customers and Delivery Crew
 
 - **GET /api/menu-items**
   - Purpose: Lists all menu items.
@@ -64,7 +64,7 @@ Two user groups, namely "Manager" and "Delivery Crew," have been created. Utiliz
 - **GET /api/menu-items/{menuItem}**
   - Purpose: Lists a single menu item.
 
-#### Accessible by Managers
+#### ii. Accessible by Managers
 
 - **GET /api/menu-items**
   - Purpose: Lists all menu items.
@@ -81,9 +81,9 @@ Two user groups, namely "Manager" and "Delivery Crew," have been created. Utiliz
 - **DELETE /api/menu-items/{menuItem}**
   - Purpose: Deletes a menu item.
 
-### User Group Management
+### 3. User Group Management
 
-#### Manager Only
+#### i. Manager Only
 
 - **GET /api/groups/manager/users**
   - Purpose: Returns all managers.
@@ -103,9 +103,9 @@ Two user groups, namely "Manager" and "Delivery Crew," have been created. Utiliz
 - **DELETE /api/groups/delivery-crew/users/{userId}**
   - Purpose: Removes a user from the delivery crew group.
 
-### Cart Management
+### 4. Cart Management
 
-#### Accessible by Customers
+#### i. Accessible by Customers
 
 - **GET /api/cart/menu-items**
   - Purpose: Returns current items in the cart.
@@ -116,9 +116,9 @@ Two user groups, namely "Manager" and "Delivery Crew," have been created. Utiliz
 - **DELETE /api/cart/menu-items**
   - Purpose: Deletes all menu items in the cart.
 
-### Order Management
+### 5. Order Management
 
-#### Accessible by Customers
+#### i. Accessible by Customers
 
 - **GET /api/orders**
   - Purpose: Returns all orders with order items.
@@ -135,7 +135,7 @@ Two user groups, namely "Manager" and "Delivery Crew," have been created. Utiliz
 - **DELETE /api/orders/{orderId}**
   - Purpose: Deletes an order.
 
-#### Accessible by Managers
+#### ii. Accessible by Managers
 
 - **GET /api/orders**
   - Purpose: Returns all orders with order items.
@@ -146,7 +146,7 @@ Two user groups, namely "Manager" and "Delivery Crew," have been created. Utiliz
 - **DELETE /api/orders/{orderId}**
   - Purpose: Deletes an order.
 
-#### Accessible by Delivery Crew
+#### iii. Accessible by Delivery Crew
 
 - **GET /api/orders**
   - Purpose: Returns all orders with order items assigned to the delivery crew.
