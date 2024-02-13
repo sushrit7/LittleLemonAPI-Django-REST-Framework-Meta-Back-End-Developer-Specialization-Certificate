@@ -184,7 +184,7 @@ To get started with this project, follow the steps below:
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/LittleLemonAPI.git
+git clone https://github.com/sushrit7LittleLemonAPI.git
 ```
 
 cd LittleLemonAPI
